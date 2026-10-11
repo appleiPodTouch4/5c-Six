@@ -58,3 +58,4 @@ restore the device with an official iPhone5,3 10.3.3/10.3.4 IPSW.
 - commit 1 Initial commit
 - commit 2 Update readme
 - commit 3 Modify the readme
+- commit 4 big change(rewrite script)
