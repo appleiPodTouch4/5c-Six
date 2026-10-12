@@ -52,10 +52,14 @@ restore the device with an official iPhone5,3 10.3.3/10.3.4 IPSW.
 - **NyanSatan**: 32-Bit iOS Dualboot guide and [fixkeybag](https://github.com/NyanSatan/fixkeybag)
 - **dora2ios**: - [iPwnder32](https://github.com/dora2ios/iPwnder32) (use BootROM exploit)
 - **MC-XiaoXiao**: - drivers from [5c6](https://github.com/MC-XiaoXiao/5c6)
+- [GLM](https://open.bigmodel.cn/): - fix some bugs of script
+- [dtbpatch](https://github.com/appleiPodTouch4/dtbpatch): - DeviceTree Patcher
+
 
 ## History
 - commit 1 Initial commit
 - commit 2 Update readme
 - commit 3 Modify the readme
-- commit 4 big change(rewrite script)
-- commit 5 fix up drivers(from MC-XiaoXiao)
+- commit 4 Big change(rewrite script)
+- commit 5 Fix up drivers(from MC-XiaoXiao)
+- commit 6 Update readme
