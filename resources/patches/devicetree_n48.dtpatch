@@ -1,0 +1,189 @@
+# devicetree_n48.dtpatch - N48 DeviceTree operations for dtbpatch
+# source: 5c6 common/devicetree + n48/devicetree + profile native6-wifi-candidate
+# input: raw Apple DT blob (n42-devicetree.dtb, iPhone5,2 10B350 stock DeviceTree payload)
+# usage: dtbpatch <in.dtb> <patch-file> <out.dtb>
+# value tokens: <hex> = bytes, "-" = empty value, ACCEPTED-only "-" = property absent,
+#               ACCEPTED-only "+" = property present with empty value
+
+INSERTNODE /device-tree/arm-io/i2c0 5 /device-tree/arm-io/i2c0/display-pmu
+NODEPROPN device-string 0 556e6b6e6f776e000000000000000000
+NODEPROPN compatible 0 646973706c61792d706d752c63686573746e757400
+NODEPROPN sage-ldo 0 00000000
+NODEPROPN device-id 0 00000000
+NODEPROPN device-revision 0 00000000
+NODEPROPN reg 0 27000000c40900000000000000000000
+NODEPROPN name 0 646973706c61792d706d7500
+NODEPROPN AAPL,phandle 0 00000074
+ENDNODE
+
+PROPOP /device-tree no-suspend 17 0 -
+ACCEPTED -
+PROPOP /device-tree/arm-io/spi1/multi-touch compatible 1 0 6d756c74692d746f7563682c6e3438000000000000000000
+ACCEPTED 6d756c74692d746f7563682c6e3431000000000000000000
+ACCEPTED 6d756c74692d746f7563682c6e3431000000000000000000
+PROPOP /device-tree/arm-io/spi1/multi-touch function-clock_enable-pmu 15 DELETE
+ACCEPTED 000000284f4950470000000001010002
+PROPOP /device-tree/arm-io/spi1/multi-touch function-power_ana 2 0 00000074454c706402030000
+ACCEPTED 000000284c756d700c020000
+PROPOP /device-tree/arm-io/spi1/multi-touch poweroff-at-shutdown 14 0 -
+ACCEPTED -
+PROPOP /device-tree/arm-io/spi3/audio-codec aout1-rcvr 11 0 -
+ACCEPTED -
+PROPOP /device-tree/arm-io/spi3/audio-codec aout1a-rcvr 27 DELETE
+ACCEPTED +
+PROPOP /device-tree/arm-io/spi3/audio-codec aout2-hac 14 0 -
+ACCEPTED -
+PROPOP /device-tree/arm-io/spi3/audio-codec compatible 12 0 617564696f2d636f6e74726f6c2c637334326c383100
+ACCEPTED 617564696f2d636f6e74726f6c2c637334326c363500
+ACCEPTED 617564696f2d636f6e74726f6c2c637334326c363500
+PROPOP /device-tree/arm-io/spi3/audio-codec function-vsp_voice_active 27 DELETE
+ACCEPTED 0000004841733269346e697031707364
+PROPOP /device-tree/arm-io/spi3/audio-codec function-xsp_active 7 0 0000004841733269346e6970
+ACCEPTED 0000004841733269326e6970
+PROPOP /device-tree/arm-io/spi3/audio-codec function-xsp_master 1 0 000000553144554176327061
+ACCEPTED 000000513144554178327061
+PROPOP /device-tree/arm-io/spi3/audio-codec function-xsp_reference_active 27 DELETE
+ACCEPTED 0000004841733269326e697032707364
+PROPOP /device-tree/arm-io/spi3/audio-codec mic1-intmic 3 0 63696d73
+ACCEPTED -
+PROPOP /device-tree/arm-io/spi3/audio-codec mic3-intmic 15 0 63696d69
+ACCEPTED -
+PROPOP /device-tree/arm-io/spi3/audio-codec mic3a-intmic 27 DELETE
+ACCEPTED 63696d69
+PROPOP /device-tree/arm-io/spi3/audio-codec mic4-intmic 17 0 63696d66
+ACCEPTED -
+PROPOP /device-tree/arm-io/spi3/audio-codec mic4a-intmic 27 DELETE
+ACCEPTED 63696d73
+PROPOP /device-tree/arm-io/spi3/audio-codec mic4a-invpol 27 DELETE
+ACCEPTED 00000000
+PROPOP /device-tree/arm-io/spi3/audio-codec mic4b-intmic 27 DELETE
+ACCEPTED 63696d66
+PROPOP /device-tree/arm-io/spi3/audio-codec xsp-reference 27 DELETE
+ACCEPTED +
+PROPOP /device-tree/arm-io/i2c0/audio-speaker speaker-config 7 0 aa3002706a80301e02040c898010740305d00400
+ACCEPTED 9a2602706a80301e02040c898a10730305000000
+PROPOP /device-tree/arm-io/i2c0/gyro orientation 1 0 00ff0000ff0000000000ff00
+ACCEPTED ff000000000100000000ff00
+PROPOP /device-tree/arm-io/i2c0/gyro orientation-inverse 6 0 00ff0000ff0000000000ff00
+ACCEPTED 0100000000ff00000000ff00
+PROPOP /device-tree/arm-io/i2c0/tristar compatible 1 0 747269737461722c6362746c3136313000
+ACCEPTED 747269737461722c7468733733383300747269737461722c6362746c3136303800
+ACCEPTED 747269737461722c7468733733383300747269737461722c6362746c3136303800
+PROPOP /device-tree/arm-io/i2c1/accelerometer accel-interrupt-calibration 1 0 00000000000000000000000000000000
+ACCEPTED 0000000000000000
+PROPOP /device-tree/arm-io/i2c1/accelerometer compatible 2 0 616363656c65726f6d657465722c626d6132383200
+ACCEPTED 616363656c65726f6d657465722c61703364736800
+ACCEPTED 616363656c65726f6d657465722c61703364736800
+PROPOP /device-tree/arm-io/i2c1/accelerometer orientation 4 0 ff0000000001000000000100
+ACCEPTED 01000000000100000000ff00
+PROPOP /device-tree/arm-io/i2c1/accelerometer reg 5 0 19000000c40900000000000000000000
+ACCEPTED 1d000000c40900000000000000000000
+PROPOP /device-tree/arm-io/mipi-dsim function-saca 14 0 0000006f414341533064636c
+ACCEPTED -
+PROPOP /device-tree/arm-io/mipi-dsim sac-range 15 0 40b0191e00000000c046b21e00000000
+ACCEPTED -
+PROPOP /device-tree/arm-io/mipi-dsim/lcd function-lcd_ldo 1 0 00000074454c706401030000
+ACCEPTED 000000284c756d700d030000
+PROPOP /device-tree/arm-io/i2s0/audio-codec compatible 1 0 617564696f2d646174612c637334326c383100
+ACCEPTED 617564696f2d646174612c637334326c363500
+ACCEPTED 617564696f2d646174612c637334326c363500
+PROPOP /device-tree/arm-io/i2s0/audio-codec reg 6 0 14010000000000009900100304ca01000010000004ca01000000000000000000
+ACCEPTED 0001000000000000810000030400000000100000040000000000000000000000
+PROPOP /device-tree/arm-io/i2s1 function-i2s_route 4 0 000000485273326931647561316e697003030300
+ACCEPTED 0000004852733269316475610000000003000000
+PROPOP /device-tree/arm-io/i2s1/adsp AAPL,ignore 10 0 -
+ACCEPTED -
+PROPOP /device-tree/arm-io/i2s1/audio-baseband-voice data-destinations 7 DELETE
+ACCEPTED 3270736444535000643270614150000000000044697361626c656400
+PROPOP /device-tree/arm-io/i2s1/audio-baseband-voice data-sources 3 0 62327061010100000000020000000000401f000000000000803e00004261736562616e6400
+ACCEPTED 62327061010100000000020000000000401f000000000000803e00004261736562616e640064327061010100000000020000000000401f000000000000803e000044535000
+PROPOP /device-tree/arm-io/i2s1/audio-baseband-voice function-data_dest_route_ap2d 7 DELETE
+ACCEPTED 0000004852733269316e69703164756100030300
+PROPOP /device-tree/arm-io/i2s1/audio-baseband-voice function-data_dest_route_dsp2 7 DELETE
+ACCEPTED 0000004852733269316e69703070736400030300
+PROPOP /device-tree/arm-io/i2s1/audio-baseband-voice function-data_source_route_ap2d 7 DELETE
+ACCEPTED 0000004852733269316475613170736400030300
+PROPOP /device-tree/arm-io/i2s1/audio-baseband-voice reg 0 0 14000000000000009900100304ca01000010000004ca01000000000000000000
+ACCEPTED 0000000000000000810010030400000000100000040000000000000000000000
+PROPOP /device-tree/arm-io/i2s2/audio-bluetooth data-destinations 7 DELETE
+ACCEPTED 6432706141500032707364445350000000000044697361626c656400
+PROPOP /device-tree/arm-io/i2s2/audio-bluetooth function-data_dest_route_ap2d 7 DELETE
+ACCEPTED 0000004852733269336e69703264756100030300
+PROPOP /device-tree/arm-io/i2s2/audio-bluetooth function-data_dest_route_dsp2 7 DELETE
+ACCEPTED 0000004852733269336e69703170736400030300
+PROPOP /device-tree/arm-io/i2s2/audio-bluetooth function-data_source_route_bths 2 0 000000485273326932647561336e697000030300
+ACCEPTED -
+PROPOP /device-tree/arm-io/i2s2/audio-bluetooth reg 6 0 14010000000000009900000304ca01000010000004ca01000000000000000000
+ACCEPTED 0001000000000000810000030400000000100000040000000000000000000000
+PROPOP /device-tree/arm-io/mca0 function-i2s_route1 3 0 00000048527332693061636d346e697003030100
+ACCEPTED 00000048527332693061636d346e697003030200
+PROPOP /device-tree/arm-io/mca0/audio-codec-reference data-sources 3 0 7832706180800800090001000000000080bb0000436f64656300
+ACCEPTED 7832706120800800090001000000000080bb0000436f64656300
+PROPOP /device-tree/arm-io/mca0/audio-codec-reference reg 0 0 0570100f0000000009020000ff0000000b010000ff00000080bb000000000000
+ACCEPTED 0570100f0000000009020000ff0000000b010000fc0000000000000000000000
+PROPOP /device-tree/arm-io/mca0/audio-codec-sidetone reg 4 0 0070100f0000000109010000010000000b0100000100000080bb000000000000
+ACCEPTED 0070100f0000000109010000010000000b010000010000000000000000000000
+PROPOP /device-tree/arm-io/mca0/audio-speaker compatible 1 0 617564696f2d646174612c637333356c323000
+ACCEPTED 617564696f2d646174612c637333356c313900
+ACCEPTED 617564696f2d646174612c637333356c313900
+PROPOP /device-tree/arm-io/mca0/audio-speaker reg 4 0 0070100f0000000009010000010000000b0100000f00000080bb000000000000
+ACCEPTED 0030100f0000000009010000010000000b0100000f0000000000000000000000
+PROPOP /device-tree/arm-io/mca1 function-i2s_route 4 0 00000048527332693161636d346e697003030300
+ACCEPTED 00000048527332693161636d0000000003000000
+PROPOP /device-tree/arm-io/mca1/audio-codec-voice clock-sources 4 0 4d7332690100000053797374656d0077326262000000004261736562616e6400
+ACCEPTED 3270736401000000445350004d7332690100000053797374656d0077326262000000004261736562616e6400
+PROPOP /device-tree/arm-io/mca1/audio-codec-voice data-destinations 9 0 643270614150000000000044697361626c656400
+ACCEPTED 3270736444535000643270614150000000000044697361626c656400
+PROPOP /device-tree/arm-io/mca1/audio-codec-voice data-sources 3 0 76327061404008000900090000000000401f000000000000112b000000000000e02e000000000000803e0000000000002256000000000000c05d000000000000007d00000000000044ac00000000000080bb0000436f64656300
+ACCEPTED 76327061202008000900090000000000401f000000000000112b000000000000e02e000000000000803e0000000000002256000000000000c05d000000000000007d00000000000044ac00000000000080bb0000436f6465630064327061204000000000020000000000401f000000000000803e000044535000
+PROPOP /device-tree/arm-io/mca1/audio-codec-voice function-clock_src_route_bb2w 5 0 00000048527332693161636d316e697000000100
+ACCEPTED 0000004852733269346e6970316e697000000100
+PROPOP /device-tree/arm-io/mca1/audio-codec-voice function-clock_src_route_dsp2 12 DELETE
+ACCEPTED 0000004852733269346e69703170736400000500
+PROPOP /device-tree/arm-io/mca1/audio-codec-voice function-clock_src_route_i2sM 7 0 00000048527332693161636d346e697000000300
+ACCEPTED 0000004852733269346e69703161636d00000500
+PROPOP /device-tree/arm-io/mca1/audio-codec-voice function-data_dest_route_dsp2 12 DELETE
+ACCEPTED 0000004852733269346e69703170736400030000
+PROPOP /device-tree/arm-io/mca1/audio-codec-voice function-data_source_route_ap2d 12 DELETE
+ACCEPTED 00000048527332693161636d3070736400030200
+PROPOP /device-tree/arm-io/mca1/audio-codec-voice reg 0 0 0070100f0000000009010000fe0000000b010000fe0000000000000000000000
+ACCEPTED 0570100f0000000009020000fc0000000b010000fc0000000000000000000000
+PROPOP /device-tree/baseband function-bb_ldo 18 0 000000284f4950470b00000001010000
+ACCEPTED 000000284c756d700e020000
+PROPOP /device-tree/baseband function-bb_pmu_rst 22 DELETE
+ACCEPTED 0000000f4f4950470001000000000000
+PROPOP /device-tree compatible 0 0 4e34384150006950686f6e65352c33004170706c6541524d00
+ACCEPTED 4e34394150006950686f6e65352c34004170706c6541524d00
+ACCEPTED 4e34324150006950686f6e65352c32004170706c6541524d00
+ACCEPTED 4e34314150006950686f6e65352c31004170706c6541524d00
+PROPOP /device-tree model 15 0 6950686f6e65352c3300
+ACCEPTED 6950686f6e65352c3400
+ACCEPTED 6950686f6e65352c3200
+ACCEPTED 6950686f6e65352c3100
+PROPOP /device-tree/arm-io/usb-complex/usb-device product-version 15 0 30050000
+ACCEPTED 20050000
+ACCEPTED 10050000
+PROPOP /device-tree/arm-io/usb-complex/usb-ehci/wlan module-instance 0 0 6261726f6c6f00
+ACCEPTED 63656e74656e6e69616c00
+
+ORDER /device-tree/arm-io/mca0/audio-speaker AAPL,phandle compatible device_type name reg
+ORDER /device-tree/arm-io/spi1/multi-touch function-clock_enable compatible function-power_ana interrupt-parent interrupts reg AAPL,phandle device_type function-power_ldo function-reset multi-touch-calibration prox-calibration function-enable_cs name poweroff-at-shutdown
+ORDER /device-tree/arm-io/mca1 dma-coherent compatible function-mclk_frequency interrupt-parent function-i2s_route dma-channels clock-gates interrupts reg device_type #size-cells AAPL,phandle function-pclk_gate #address-cells dma-parent name
+ORDER /device-tree/arm-io/mca0/audio-codec-reference reg compatible AAPL,phandle data-sources device_type name
+ORDER /device-tree/arm-io/i2c1/accelerometer interrupt-parent accel-interrupt-calibration compatible interrupts orientation reg low-temp-accel-offset AAPL,phandle accel-sensitivity-calibration device_type name
+ORDER /device-tree/arm-io/mipi-dsim compatible clock-ids interrupt-parent interrupts clock-gates reg sac-version AAPL,phandle device_type #size-cells #address-cells power-gates #lanes name function-saca sac-range
+ORDER /device-tree/arm-io/i2s2/audio-bluetooth AAPL,phandle compatible function-data_source_route_bths data-sources device_type name reg
+ORDER /device-tree/arm-io/i2s1/adsp name compatible function-pcm0_route function-pcm1_route function-pcm2_route_ref_ext reg AAPL,phandle device_type function-pcm2_route_mix function-pcm2_route_ref_int AAPL,ignore
+ORDER /device-tree/arm-io/i2c0/audio-speaker function-alive at-scale compatible speaker-rdc interrupt-parent interrupts reg speaker-config AAPL,phandle device_type function-reset function-mclk_control function-ext_master name function-ext_active
+ORDER /device-tree/arm-io/spi3/audio-codec function-ext_sw2 function-xsp_master at-scale-fmic mic1-intmic AAPL,phandle function-vsp_master at-scale-imic function-xsp_active name interrupt-parent function-ext_sw1 aout1-rcvr compatible interrupts aout2-hac mic3-intmic mic2-extmic mic4-intmic at-scale-rcvr function-vsp_sidetone_active function-mbus_dock_parent at-scale-smic device_type hpout-hp function-vsp_active reg vsp-voice
+ORDER /device-tree/arm-io/i2s1/audio-baseband-voice reg compatible AAPL,phandle data-sources device_type clock-sources name
+ORDER /device-tree/arm-io/i2c0/gyro use-2-interrupts orientation compatible function-int2_timestamp interrupt-parent interrupts orientation-inverse reg gyro-sens-matrix-inverse high-temp-offset device_type AAPL,phandle gyro-sensitivity-calibration low-temp-offset gyro-interrupt-calibration gyro-temp-table name
+ORDER /device-tree/arm-io/mca0/audio-codec-sidetone AAPL,phandle compatible device_type name reg
+ORDER /device-tree/arm-io/mipi-dsim/lcd compatible function-lcd_ldo function-reset raw-panel-id lcd-panel-id device_type name AAPL,phandle
+ORDER /device-tree/arm-io/i2s0/audio-codec AAPL,phandle compatible function-clock_src_baseband function-clock_src_system device_type name reg
+ORDER /device-tree/arm-io/mca1/audio-codec-voice reg compatible AAPL,phandle data-sources clock-sources function-clock_src_route_bb2w device_type function-clock_src_route_i2sM name data-destinations function-data_dest_route_ap2d function-data_source_route_ap2v
+ORDER /device-tree/baseband class AAPL,phandle function-uart1_rts device-imei function-bb_on function-bb_usb_mux function-pmu_exton function-hsic_ready imeisv function-bb_rst region-sku name interrupt-parent compatible function-radio_on function-sac function-bb_uart_mux interrupts function-bb_ldo device_type function-reset_det config
+ORDER /device-tree/arm-io/i2s1 dma-coherent compatible function-mclk_frequency interrupt-parent function-i2s_route dma-channels clock-gates interrupts reg device_type #size-cells i2s-version AAPL,phandle function-pclk_gate #address-cells dma-parent name
+ORDER /device-tree compatible secure-root-prefix AAPL,phandle config-number model-number firmware-min-capacity platform-name device_type #size-cells clock-frequency mlb-serial-number manufacturer #address-cells region-info serial-number model name no-suspend
+ORDER /device-tree/arm-io/i2c0/tristar interrupt-parent compatible function-brick_id_voltage interrupts reg AAPL,phandle dock function-usb_dmonitor name
+ORDER /device-tree/arm-io/mca0 dma-coherent compatible function-mclk_frequency function-i2s_route1 interrupt-parent dma-channels clock-gates interrupts reg device_type #size-cells AAPL,phandle #address-cells function-pclk_gate dma-parent function-i2s_route0 name

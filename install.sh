@@ -115,21 +115,23 @@ oscheck() {
         fi
         platform_message="macOS ${macos_name}($platform_arch)"
     elif [[ "$platform" == "linux" ]]; then
-        warn The Linux version is still being adapted, and some features have not yet been fixed. Should we continue using it?
-        pause Press Enter to continue.
-        check_sudo
-        #linux_part
-        arch_path="linux/"
-        linux_name=$(grep '^NAME=' /etc/os-release | cut -d'"' -f2)
-        platform_message="${linux_name} ($platform_arch)"
-        dir="../tools/linux"
-        if [[ $linux_name != Ubuntu ]]; then
-            error "Support ubuntu only"
-            yesno
-            if [[ $? != 1 ]]; then
-                exit
-            fi
-        fi
+        #warn The Linux version is still being adapted, and some features have not yet been fixed. Should we continue using it?
+        #pause Press Enter to continue.
+        #check_sudo
+        ##linux_part
+        #arch_path="linux/"
+        #linux_name=$(grep '^NAME=' /etc/os-release | cut -d'"' -f2)
+        #platform_message="${linux_name} ($platform_arch)"
+        #dir="../tools/linux"
+        #if [[ $linux_name != Ubuntu ]]; then
+        #    error "Support ubuntu only"
+        #    yesno
+        #    if [[ $? != 1 ]]; then
+        #        exit
+        #    fi
+        #fi
+        warn "Unsupport for linux in current version,waiting for update"
+        exit
     fi
     if [[ $platform_message != $local_platform_message ]]; then
         install_depends
@@ -236,6 +238,7 @@ set_path() {
         zenity="$dir/zenity"
         iBoot32Patcher=""
         xpwntool=""
+        dtbpatch=""
         hfsplus=""
         pzb=""
         jq=""
@@ -257,6 +260,7 @@ set_path() {
         zenity="sudo GSETTINGS_BACKEND=memory $(command -v zenity)"
         iBoot32Patcher="sudo "
         xpwntool="sudo "
+        dtbpatch="sudo "
         hfsplus="sudo "
         pzb="sudo "
         jq="sudo "
@@ -275,6 +279,7 @@ set_path() {
     iBoot32Patcher+=$dir/iBoot32Patcher
     xpwntool+=$dir/xpwntool
     hfsplus+=$dir/hfsplus
+    dtbpatch+=$dir/dtbpatch
     pzb+=$dir/pzb
     jq+=$dir/jq
     img3maker+=$dir/img3maker
@@ -1034,6 +1039,21 @@ main_info() {
     print  "- $platform_message -"
     print  "- Script by XiaoWZ MrY0000 -"
     print  "- Thanks LuckZGD -"
+    print  "- Device type:$device_type -"
+    print  "- Device model:$device_model -"
+    if [[ $device_type == "iPhone5,4" ]]; then
+        warn "Your device($device_type) haven't patches,cannot fix drivers"
+        warn "Waiting for update"
+        warn "Enable no driver flag"
+        nodriver=1
+    fi
+    if [[ $nodriver == "1" ]]; then
+        warn "No driver flag enabled,you will not install drivers"
+    fi
+    if [[ $skip_partition == "1" ]]; then
+        warn "Skip partition flag enabled,you will skip partition disk"
+        warn "Make sure you have partitioned disk,otherwise the installtion will fail"
+    fi
 }
 
 
@@ -1067,6 +1087,7 @@ main_menu() {
     fi
     
     if [[ $mode == "install" ]]; then
+        checkmode DFU
         ramdisk 11A470a
         install_rootfs
     elif [[ $mode == "prepare" ]]; then
@@ -1086,7 +1107,7 @@ main_menu() {
 }
 
 ipsw_menu() {
-    local options1=()
+    local options=()
     main_info
     if [[ -f ../saved/6.1.4.ipsw ]]; then
         log "Found exist ipsw"
@@ -1108,13 +1129,17 @@ ipsw_menu() {
         fi
     fi
     input "Select option:"
-    options1+=("Select iOS6.1.4 firmware")
-    options1+=("Download iOS6.1.4 firmware")
-    select_option "${options1[@]}"
-    selected1="${options1[$?]}"
-    case $selected1 in
+    options+=("Select iOS6.1.4 firmware")
+    options+=("Download iOS6.1.4 firmware")
+    if [[ -n $ipsw_path ]]; then
+        options+=("Start make")
+    fi
+    select_option "${options[@]}"
+    selected="${options[$?]}"
+    case $selected in
         "Select iOS6.1.4 firmware" ) 
             ipsw_path="$($zenity --file-selection --file-filter='IPSW | *.ipsw' --title="Select IPSW file(s)")"
+            log "Verify ipsw"
             ipsw_sha1=$($sha1sum $ipsw_path | awk '{print $1}')
             get_firmware_info base 6.1.4
             if [[ $ipsw_sha1 != $firmware_sha1 ]]; then
@@ -1130,17 +1155,16 @@ ipsw_menu() {
             if [[ $? == 1 ]]; then
                 error "Download ipsw failed,check your Internet connection"
                 pause
+                ipsw_path=
+            else
+                cp 6.1.4.ipsw ../saved/6.1.4.ipsw
+                ipsw_path=../saved/6.1.4.ipsw
             fi
-            cp 6.1.4.ipsw ../saved/6.1.4.ipsw
-            ipsw_path=../saved/6.1.4.ipsw
         ;;
+        "Start make" ) return;;
     esac
-    if [[ -n $ipsw_path ]]; then
-        return
-    else
-        ipsw_menu
-        return
-    fi
+    ipsw_menu
+    return
 }
 
 
@@ -1149,9 +1173,8 @@ prepare_rootfs() {
     local iv
     local key
     local ivkey
-    local jailbreak
     if [[ -f ../saved/rootfs.uzdo.dmg ]]; then
-        log “RootFS exist”
+        log "RootFS exist"
         cp ../saved/rootfs.uzdo.dmg rootfs.uzdo.dmg
         return
     fi
@@ -1182,10 +1205,6 @@ prepare_rootfs() {
         error "Unable to make rootfs.uzdo.dmg"
         return 1
     fi
-    yesno "Do you want to jailbreak?"
-    if [[ $? == 1 ]]; then
-        jailbreak=1
-    fi
 
     cp rootfs.uzdo.dmg ../saved/rootfs.uzdo.dmg
     log "Done,prepare rootfs successfully"
@@ -1201,6 +1220,7 @@ install_rootfs() {
     if [[ $? != 1 ]]; then
         exit 1
     fi
+
     if [[ ! -f rootfs.uzdo.dmg ]]; then
         prepare_rootfs
     fi
@@ -1226,17 +1246,15 @@ install_rootfs() {
     fi
     hdiutil detach "/tmp/rootfs-mount" -quiet
     pause
-
-    log "Get last sectors"
-    
-    last_sector="$($sshc 'gptfdisk -l /dev/rdisk0s1' | awk 'tolower($0) ~ /last usable sector is/ {print $NF; exit}')"
-    [[ $last_sector =~ ^[0-9]+$ ]] || { error "Could not read last usable GPT sector"; exit 1; }
-    
-    last_sector=$((last_sector - 4))
-    (( last_sector > 524294 )) || { error "Disk geometry is too small"; exit 1; }
-        
-    log "Partitioning disk..."
-    printf 'd\n1\nd\nn\n1\n\n524294\n\nn\n\n\n%s\n\nc\n1\nSystem\nc\n2\nData\nw\ny\n' "$last_sector" | $sshc 'gptfdisk /dev/rdisk0s1'
+    if [[ $skip_partition != "1" ]]; then
+        log "Get last sectors"
+        last_sector="$($sshc 'gptfdisk -l /dev/rdisk0s1' | awk 'tolower($0) ~ /last usable sector is/ {print $NF; exit}')"
+        [[ $last_sector =~ ^[0-9]+$ ]] || { error "Could not read last usable GPT sector"; exit 1; }
+        last_sector=$((last_sector - 4))
+        (( last_sector > 524294 )) || { error "Disk geometry is too small"; exit 1; }
+        log "Partitioning disk..."
+        printf 'd\n1\nd\nn\n1\n\n524294\n\nn\n\n\n%s\n\nc\n1\nSystem\nc\n2\nData\nw\ny\n' "$last_sector" | $sshc 'gptfdisk /dev/rdisk0s1'
+    fi
     log "Create filesystems"
     $sshc "/sbin/newfs_hfs -s -v System -J -b 4096 -n a=4096,c=4096,e=4096 /dev/disk0s1s1 && /sbin/newfs_hfs -s -v Data -J -P -b 4096 -n a=4096,c=4096,e=4096 /dev/disk0s1s2 && mkdir -p /mnt1 /mnt2"
     log "Restoring RootFS"
@@ -1247,7 +1265,25 @@ install_rootfs() {
     $sshc "mv /mnt1/private/var/* /mnt2 && mkdir -p /mnt2/keybags && chown 0:0 /mnt2/keybags && chmod 755 /mnt2/keybags" 
     $sshc "mkdir -p /mnt2/.5c-six-config"
     $scp -P $ssh_port ../config/* ../resources/fixkeybag/fixkeybag root@127.0.0.1:/mnt2/.5c-six-config/
-    $sshc "cp /mnt2/.5c-six-config/fstab /mnt1/private/etc/fstab && cp /mnt2/.5c-six-config/launchd.conf /mnt1/private/etc/launchd.conf && cp /mnt2/.5c-six-config/fixkeybag /mnt1/fixkeybag && chown 0:0 /mnt1/fixkeybag && chmod 755 /mnt1/fixkeybag && rm -rf /mnt2/.5c-six-config" 
+    $sshc "cp /mnt2/.5c-six-config/launchd.conf /mnt1/private/etc/launchd.conf && cp /mnt2/.5c-six-config/fixkeybag /mnt1/fixkeybag && chown 0:0 /mnt1/fixkeybag && chmod 755 /mnt1/fixkeybag" 
+    if [[ $nodriver != "1" ]]; then
+        log "Synthesizing ${device_model} SpringBoard plist"
+        local ap_model=$(echo $device_model | tr '[:lower:]' '[:upper:]')
+        $sshc "cp /mnt1/System/Library/CoreServices/SpringBoard.app/N42AP.plist /mnt1/System/Library/CoreServices/SpringBoard.app/${ap_model}AP.plist"
+        log "Installing drivers"
+        cat ../resources/drivers/drivers_${device_model}.tar | $sshc 'cd /mnt1 && tar xpvf -' || { error "Driver injection failed"; exit 1; }
+    fi
+    log "Jailbreaking"
+    cat ../resources/jailbreak/jailbreak.tar | $sshc 'cd /mnt1 && tar xpvf -' || { error "Bootstrap injection failed"; exit 1; }
+    log "Applying hacktivation patches"
+    $scp -P $ssh_port ../resources/activation/lockdownd.patched root@127.0.0.1:/mnt1/usr/libexec/lockdownd
+    $sshc "chown 0:0 /mnt1/usr/libexec/lockdownd && chmod 755 /mnt1/usr/libexec/lockdownd"
+    $scp -P $ssh_port ../resources/activation/fstab root@127.0.0.1:/mnt1/private/etc/fstab
+    $sshc "chown 0:0 /mnt1/private/etc/fstab"
+    $sshc "rm -rf /mnt2/.5c-six-config"
+    log "Rebooting"
+    $sshc "nvram -c"
+    $sshc "sync"
     $sshc "reboot_bak"
     log "Done, use ./install.sh boot to continue"
     pause
@@ -1512,10 +1548,18 @@ ramdisk_boot() {
         sleep 2
     done
 
-    $ssh -p $ssh_port root@127.0.0.1
+    #$ssh -p $ssh_port root@127.0.0.1
 
     return
 
+}
+
+apply_table() {
+    local tbl="$1" out="$2" off hex
+    while IFS=' ' read -r off hex; do
+        [ -z "$off" ] && continue
+        printf '%b' "$(echo "$hex" | sed 's/../\\x&/g')" | dd of="$out" bs=1 seek="$off" conv=notrunc 2>/dev/null
+    done < "$tbl"
 }
 
 just_boot() {
@@ -1613,24 +1657,55 @@ just_boot() {
             log "Patching $getcomps"
             case $getcomps in
                 "DeviceTree" )
-                $xpwntool $name1 DeviceTree.img3 -iv $iv1 -k $key1 -decrypt
-                if [[ $? == 1 ]]; then
-                    error "Unale to patch DeviceTree"
-                    exit 1
+                if [[ $nodriver == "1" ]]; then
+                    $xpwntool $name1 DeviceTree.img3 -iv $iv1 -k $key1 -decrypt
+                    if [[ $? == 1 ]]; then
+                        error "Unale to patch DeviceTree"
+                        exit 1
+                    fi
+                else
+                    "$dir/xpwntool" $name1 DeviceTree.dec -iv $iv1 -k $key1 -decrypt
+                    if [[ $? == 1 ]]; then
+                        error "Unable to decrypt DeviceTree"
+                        exit 1
+                    fi
+                    "$dir/xpwntool" $name1 DeviceTree.dtb -iv $iv1 -k $key1
+                    [[ $(stat -f%z DeviceTree.dtb) == 83852 ]] || { error "DeviceTree decrypt failed"; exit 1; }
+                    "$dir/dtbpatch" DeviceTree.dtb ../resources/patches/devicetree_${device_model}.dtpatch DeviceTree.patched.dtb
+                    if [[ $? != 0 ]] || [[ ! -f DeviceTree.patched.dtb ]]; then
+                        error "Unable to patch DeviceTree"
+                        exit 1
+                    fi
+                    "$dir/xpwntool" DeviceTree.patched.dtb DeviceTree.img3 -t DeviceTree.dec
+                    log "DeviceTree generated ($(stat -f%z DeviceTree.patched.dtb) bytes)"
                 fi
                 ;;
                 "Kernelcache" )
                 $xpwntool $name1 Kernelcache.dec -iv $iv1 -k $key1 -decrypt
-                $xpwntool $name1 Kernelcache.raw -iv $iv1 -k $key1
-                while read -r offset expected replacement _; do
-                    [[ -z $offset || $offset == \#* ]] && continue
-                    actual="$(xxd -p -l 4 -s "$((16#$offset))" "Kernelcache.raw" | tr -d '\n')"
-                    [[ $actual == "$expected" ]] || error "Kernel patch signature mismatch at 0x$offset" || exit 1
-                    printf '%s' "$replacement" | xxd -r -p | dd of="Kernelcache.raw" bs=1 seek="$((16#$offset))" conv=notrunc 2>/dev/null
-                    actual="$(xxd -p -l 4 -s "$((16#$offset))" "Kernelcache.raw" | tr -d '\n')"
-                    [[ $actual == "$replacement" ]] || error "Kernel patch write failed at 0x$offset" || exit 1
-                done < "../config/kernelcache-10B350.tsv"
-                $xpwntool Kernelcache.raw Kernelcache.img3 -t Kernelcache.dec
+                if [[ $nodriver == "1" ]]; then
+                    $xpwntool $name1 Kernelcache.raw -iv $iv1 -k $key1
+                    while read -r offset expected replacement _; do
+                        [[ -z $offset || $offset == \#* ]] && continue
+                        actual="$(xxd -p -l 4 -s "$((16#$offset))" "Kernelcache.raw" | tr -d '\n')"
+                        [[ $actual == "$expected" ]] || error "Kernel patch signature mismatch at 0x$offset" || exit 1
+                        printf '%s' "$replacement" | xxd -r -p | dd of="Kernelcache.raw" bs=1 seek="$((16#$offset))" conv=notrunc 2>/dev/null
+                        actual="$(xxd -p -l 4 -s "$((16#$offset))" "Kernelcache.raw" | tr -d '\n')"
+                        [[ $actual == "$replacement" ]] || error "Kernel patch write failed at 0x$offset" || exit 1
+                    done < "../config/kernelcache-10B350.tsv"
+                    $xpwntool Kernelcache.raw Kernelcache.img3 -t Kernelcache.dec
+                else
+                    local out="../saved/kernelcache_n48.macho"
+                    log "Decrypting 10B350 kernelcache"
+                    "$dir/xpwntool" $name1 n42-kernel.macho -iv $iv1 -k $key1
+                    [[ $(stat -f%z n42-kernel.macho) == 14204928 ]] || { error "Kernelcache decrypt failed"; exit 1; }
+                    cp n42-kernel.macho "$out"
+                    apply_table ../resources/patches/kernelcache_${device_model}.patches "$out"
+                    apply_table ../resources/patches/kernelcache_${device_model}.repl "$out"
+                    cat ../resources/patches/kernelcache_${device_model}.tail >> "$out"
+                    [[ $(stat -f%z "$out") == 14381056 ]] || { error "Kernelcache size mismatch"; exit 1; }
+                    log "Kernelcache generated: $out"
+                    $xpwntool $out Kernelcache.img3 -t Kernelcache.dec
+                fi
                 ;;
             esac
         done
@@ -1658,8 +1733,13 @@ just_boot() {
     $irecovery -f $files/iBEC.img3
     sleep 3
     checkmode rec 20
-    log "$irecovery -c setenv boot-args -v amfi=0xff amfi_get_out_of_my_way=1 cs_enforcement_disable=1 pio-error=0"
-    $irecovery -c "setenv boot-args -v amfi=0xff amfi_get_out_of_my_way=1 cs_enforcement_disable=1 pio-error=0"
+    if [[ $nodriver == "1" ]]; then
+        log "$irecovery -c setenv boot-args -v amfi=0xff amfi_get_out_of_my_way=1 cs_enforcement_disable=1 pio-error=0"
+        $irecovery -c "setenv boot-args -v amfi=0xff amfi_get_out_of_my_way=1 cs_enforcement_disable=1 pio-error=0"
+    else
+        log "$irecovery -c setenv boot-args rd=disk0s1s1 -v debug=0x2014e wdt=-1 pio-error=0 amfi=0xff cs_enforcement_disable=1"
+        $irecovery -c "setenv boot-args rd=disk0s1s1 -v debug=0x2014e wdt=-1 pio-error=0 amfi=0xff cs_enforcement_disable=1"
+    fi
     sleep 2
     log "Sending DeviceTree..."
     log "$irecovery -f $files/DeviceTree.img3"
@@ -1821,6 +1901,8 @@ main() {
             install ) mode="install";;
             boot ) mode="boot";;
             --no-device ) device_argmode="none";;
+            --no-drivers ) nodriver=1;;
+            --skip-partition ) skip_partition=1;;
             * ) warn "Unknown command,use"./install.sh help" to use right command"; exit;;
         esac
     done

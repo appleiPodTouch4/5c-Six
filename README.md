@@ -1,8 +1,6 @@
 # 5c-Six: iPhone 5c to iOS 6.1.4
 
-This project currently provides experimental system installation and boot startup of  
-iOS 6.1.4 (10B350). If you want to fix the functions in your device, please wait for  
-Github: [@MC-XiaoXiao](https://github.com/MC-XiaoXiao) to release the official version...
+This project currently provides experimental system installation and boot startup of iOS 6.1.4 (10B350)
 
 This is a standalone macOS project for the experimental, tethered iOS 6.1.4 (10B350)  
 cross-boot on iPhone5,3, based on Kaiden's guide:  
@@ -53,9 +51,11 @@ restore the device with an official iPhone5,3 10.3.3/10.3.4 IPSW.
 - **LukeZGD**: many tools from [Legacy-iOS-Kit](https://github.com/LukeZGD/Legacy-iOS-Kit)
 - **NyanSatan**: 32-Bit iOS Dualboot guide and [fixkeybag](https://github.com/NyanSatan/fixkeybag)
 - **dora2ios**: - [iPwnder32](https://github.com/dora2ios/iPwnder32) (use BootROM exploit)
+- **MC-XiaoXiao**: - drivers from [5c6](https://github.com/MC-XiaoXiao/5c6)
 
 ## History
 - commit 1 Initial commit
 - commit 2 Update readme
 - commit 3 Modify the readme
 - commit 4 big change(rewrite script)
+- commit 5 fix up drivers(from MC-XiaoXiao)
